@@ -1,4 +1,5 @@
 import MainNav from "@/components/MainNav";
+import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -18,15 +19,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav className="flex flex-col items-center border-b mb-5 px-5 py-3">
-          <div className="max-w-6xl w-full">
-            <MainNav />
-          </div>
-        </nav>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <nav className="flex flex-col items-center border-b mb-5 px-5 py-3">
+            <div className="max-w-6xl w-full">
+              <MainNav />
+            </div>
+          </nav>
 
-        <nav className="flex flex-col items-center border-b">
-          <div className="max-w-6xl w-full">{children}</div>
-        </nav>
+          <nav className="flex flex-col items-center border-b">
+            <div className="max-w-6xl w-full">{children}</div>
+          </nav>
+        </ThemeProvider>
       </body>
     </html>
   );
