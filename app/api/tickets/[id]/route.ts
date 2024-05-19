@@ -1,5 +1,5 @@
 import prisma from "@/prisma/db";
-import { ticketSchema } from "@/validationSchemas/ticket";
+import { ticketPatchSchema } from "@/validationSchemas/ticket";
 import { NextRequest, NextResponse } from "next/server";
 
 interface Props {
@@ -8,8 +8,7 @@ interface Props {
 
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
-  console.log(">>>", body);
-  const validation = ticketSchema.safeParse(body);
+  const validation = ticketPatchSchema.safeParse(body);
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), { status: 400 });
@@ -23,7 +22,9 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Ticcket not found" }, { status: 400 });
   }
 
-  console.log("111");
+  if (body?.assignedToUserId) {
+    body.assignedToUserId = parseInt(body.assignedToUserId);
+  }
 
   const updateTicket = await prisma.ticket.update({
     where: { id: ticket.id },
@@ -32,7 +33,21 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     },
   });
 
-  console.log("updateTicket", updateTicket);
-
   return NextResponse.json(updateTicket);
+}
+
+export async function DELETE(request: NextRequest, { params }: Props) {
+  const ticket = await prisma.ticket.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+
+  if (!ticket) {
+    return NextResponse.json({ error: "Ticcket not found" }, { status: 400 });
+  }
+
+  await prisma.ticket.delete({
+    where: { id: ticket.id },
+  });
+
+  return NextResponse.json({ message: "Ticket Deleted" });
 }

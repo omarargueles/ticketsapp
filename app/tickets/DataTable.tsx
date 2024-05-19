@@ -1,5 +1,5 @@
+import TicketPriority from "@/components/TicketPriority";
 import TicketStatusBadge from "@/components/TicketStatusBadge";
-import TicketPriority from "@/components/ticketPriority";
 import {
   Table,
   TableBody,
@@ -9,32 +9,74 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Ticket } from "@prisma/client";
+import { ArrowDown } from "lucide-react";
+import Link from "next/link";
+import { SearchParams } from "./page";
 
 interface Props {
   tickets: Ticket[];
+  searchParams: SearchParams;
 }
 
-const DataTable = ({ tickets }: Props) => {
+const DataTable = ({ tickets, searchParams }: Props) => {
   return (
     <div className="w-full mt-5">
       <Table className="rounded-md sm:border">
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
             <TableHead>
-              <div className="flex justify-center">Status</div>
+              {" "}
+              <Link href={{ query: { ...searchParams, orderBy: "title" } }}>
+                Title
+              </Link>
+              {"title" === searchParams.orderBy && (
+                <ArrowDown className="inline p-1" />
+              )}
             </TableHead>
             <TableHead>
-              <div className="flex justify-center">Priority </div>
+              <div className="flex justify-center">
+                <Link href={{ query: { ...searchParams, orderBy: "status" } }}>
+                  Status
+                </Link>
+                {"status" === searchParams.orderBy && (
+                  <ArrowDown className="inline p-1" />
+                )}
+              </div>
             </TableHead>
-            <TableHead>Created At</TableHead>
+            <TableHead>
+              <div className="flex justify-center">
+                <Link
+                  href={{ query: { ...searchParams, orderBy: "priority" } }}
+                >
+                  Priority
+                </Link>
+                {"priority" === searchParams.orderBy && (
+                  <ArrowDown className="inline p-1" />
+                )}
+              </div>
+            </TableHead>
+            <TableHead>
+              <div className="flex justify-center">
+                <Link
+                  href={{ query: { ...searchParams, orderBy: "createdAt" } }}
+                >
+                  Created At
+                </Link>
+                {"createdAt" === searchParams.orderBy && (
+                  <ArrowDown className="inline p-1" />
+                )}
+              </div>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {tickets
             ? tickets.map((ticket) => (
                 <TableRow key={ticket.id} data-href="/">
-                  <TableCell>{ticket.title}</TableCell>
+                  <TableCell>
+                    <Link href={`/tickets/${ticket.id}`}>{ticket.title}</Link>
+                  </TableCell>
+
                   <TableCell>
                     <div className="flex justify-center">
                       <TicketStatusBadge
